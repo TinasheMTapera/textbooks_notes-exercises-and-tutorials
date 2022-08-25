@@ -5,3 +5,5 @@ This repo tracks any code related to the textbooks I read for my own benefit
 keep track of code that is helpful or insightful, try out packages, 
 do `hello world` demos of tutorials, etc., either informally or formally. If possible, directories are
 submodule forked repos of the original book's HTML.
+
+[Tidy Modeling With R (Kuhn, Silge, 2022)](./TMwR/README.md)
