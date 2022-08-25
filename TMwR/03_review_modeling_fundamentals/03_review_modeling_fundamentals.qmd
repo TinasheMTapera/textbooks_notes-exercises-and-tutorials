@@ -4,3 +4,119 @@ format: html
 ---
 
 Let's look at the `crickets` data.
+
+
+```{r}
+library(tidyverse)
+
+data(crickets, package = "modeldata")
+names(crickets)
+```
+
+```{r}
+crickets
+```
+
+::: {.callout-note}
+## Task
+
+Plot the temp on the x axis, the chirp rate on the y axis; use a separate colour for each species:
+:::
+
+```{r}
+crickets %>%
+    ggplot(aes(x=temp, y=rate, colour=species, pch=species, lty=species)) +
+        geom_point(size=2)
+```
+
+### Modeling Example
+
+Inferential model examples:
+
+1. _null hypothesis_: temp has no effect on chirp rate
+2. _null hypothesis_: there is no difference between species' chirp rate
+
+We can run a quick visual test of these null hypotheses by fiting a linear model to the full data and each species:
+
+```{r}
+crickets %>%
+    ggplot() +
+        geom_smooth(aes(x=temp, y=rate, colour = "all data"), method = lm) +
+        geom_point(aes(x=temp, y=rate, colour=species, pch=species, lty=species), size=2) +
+        geom_smooth(aes(x=temp, y=rate, colour=species, pch=species, lty=species),method = lm, se = FALSE, alpha=0.5)
+```
+
+
+Inferential model results:
+
+1. _null hypothesis_: temp has no effect on chirp rate = **provisionally Reject** because it is clear that temp increases with rate ("all data" slope is clear)
+2. _null hypothesis_: there is no difference between species' chirp rate = **provisionally Reject** because the slopes for each species are clearly separate
+
+Models have the form:
+
+```
+y ~ x1 + x2 + (x1 * x2)
+```
+
+Where $y$ is the outcome variable, $x_n$ are each predictors, and an interaction is modeled by `*`.
+
+Example of a real model:
+
+
+```{r}
+interaction_fit <-  lm(rate ~ (temp + species)^2, data = crickets)
+
+summary(interaction_fit)
+```
+
+The intercept coefficient is the _expected mean_ when all
+predictors are zero. The temp coefficient tells us the slope of the relationship between temp and rate, i.e. for each unit change in temp, rate has a unit change of `r interaction_fit$coefficients[[2]]`. Since species is a factor, the coefficient tells us the slope of the relationship for the _reference level/class_.
+
+The interaction coefficient tells us that the two variables working together can _vary the slope of the relationship between one of those variables and the outcome._
+
+### Diagnosing a model with plots
+
+```{r}
+# Place two plots next to one another:
+par(mfrow = c(1, 2))
+
+# Show residuals vs predicted values:
+plot(interaction_fit, which = 1)
+
+# A normal quantile plot on the residuals:
+plot(interaction_fit, which = 2)
+```
+
+We can see if the interaction term is necessary by running an F test comparing two models, with `anova()` [see here for some theory](https://stats.libretexts.org/Bookshelves/Applied_Statistics/Book%3A_Learning_Statistics_with_R_-_A_tutorial_for_Psychology_Students_and_other_Beginners_(Navarro)/16%3A_Factorial_ANOVA/16.05%3A_The___F___test_as_a_model_comparison).
+
+
+```{r}
+# Fit a reduced model:
+main_effect_fit <-  lm(rate ~ temp + species, data = crickets) 
+
+anova(main_effect_fit, interaction_fit)
+```
+
+Since $p > 0.05$ we cannot reject the null hypothesis that the interaction term is not necessary; i.e. the interaction term model explains more variance and is therefore a "better fit".
+
+### Prediction
+
+Simple:
+
+```{r}
+new_values <- data.frame(species = "O. exclamationis", temp = 15:20)
+predict(main_effect_fit, new_values)
+```
+
+## Tidymodels goals
+
+To unify modeling under the [tidy design guide](https://design.tidyverse.org/):
+
+- Code adheres to the tidy structure for inputs, defaults, dots, outputs, errors, and side effects
+
+> - It is human centered, i.e. the tidyverse is designed specifically to support the activities of a human data analyst. 
+> - It is consistent, so that what you learn about one function or package can be applied to another, and the number of special cases that you need to remember is as small as possible.
+> - It is composable, allowing you to solve complex problems by breaking them down into small pieces, supporting a rapid cycle of exploratory iteration to find the best solution.
+> - It is inclusive, because the tidyverse is not just the collection of packages, but it is also the community of people who use them.
+
+

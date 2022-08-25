@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Chapter 1: Software for Modeling</title>
+<title>Tidy Modeling with R: Notes &amp; Exercises - 1&nbsp; Chapter 1: Software for Modeling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -18,29 +18,111 @@ ul.task-list{list-style: none;}
 </style>
 
 
-<script src="01_software_for_modeling_files/libs/clipboard/clipboard.min.js"></script>
-<script src="01_software_for_modeling_files/libs/quarto-html/quarto.js"></script>
-<script src="01_software_for_modeling_files/libs/quarto-html/popper.min.js"></script>
-<script src="01_software_for_modeling_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="01_software_for_modeling_files/libs/quarto-html/anchor.min.js"></script>
-<link href="01_software_for_modeling_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="01_software_for_modeling_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="01_software_for_modeling_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="01_software_for_modeling_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="01_software_for_modeling_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_review_modeling_fundamentals/03_review_modeling_fundamentals.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
 
 
 </head>
 
-<body class="fullcontent">
+<body class="nav-sidebar floating">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Software for Modeling</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Tidy Modeling with R: Notes &amp; Exercises</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_software_for_modeling/01_software_for_modeling.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Software for Modeling</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_review_modeling_fundamentals/03_review_modeling_fundamentals.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ch. 3: A Review of R Modeling Fundamentals</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#types-of-models" id="toc-types-of-models" class="nav-link active" data-scroll-target="#types-of-models"> <span class="header-section-number">1.1</span> Types of Models</a></li>
+  <li><a href="#modeling-pipeline" id="toc-modeling-pipeline" class="nav-link" data-scroll-target="#modeling-pipeline"> <span class="header-section-number">2</span> Modeling pipeline</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Chapter 1: Software for Modeling</h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Software for Modeling</span></h1>
 </div>
 
 
@@ -73,8 +155,8 @@ Note
 <blockquote class="blockquote">
 <p>The Pit of Success: in stark contrast to a summit, a peak, or a journey across a desert to find victory through many trials and surprises, we want our customers to simply fall into winning practices by using our platform and frameworks.</p>
 </blockquote>
-<section id="types-of-models" class="level2">
-<h2 class="anchored" data-anchor-id="types-of-models">Types of Models</h2>
+<section id="types-of-models" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="types-of-models"><span class="header-section-number">1.1</span> Types of Models</h2>
 <ol type="1">
 <li><p><em>Descriptive models</em>: To describe or illustrate characteristics of data. e.g.&nbsp;visually emphasise a trend or artifact</p></li>
 <li><p><em>Inferential models</em>: To produce a decision for a research question or to explore a specific hypothesis, similar to how statistical tests are used (remember t-tests &amp; ANOVA are GLMs)</p></li>
@@ -99,18 +181,19 @@ Note
 <p>There are two approaches — mechanistic (known mechanisms of first principles a priori, like knowing how to model effort by knowing it’s a combination of reward and risk) or empirical, where the model is defined only by the structure of the prediction</p>
 <p>These can be lumped into supervised (known outcome, e.g.&nbsp;regression or classification) and unsupervised (no known outcome, e.g.&nbsp;pattern or cluster analysis)</p>
 </section>
-<section id="modeling-pipeline" class="level1">
-<h1>Modeling pipeline</h1>
+<section id="modeling-pipeline" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Modeling pipeline</h1>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.tmwr.org/premade/modeling-process.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">modeling process</figcaption><p></p>
 </figure>
 </div>
+
+
 </section>
 
-</main>
-<!-- /main column -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -208,6 +291,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_review_modeling_fundamentals/03_review_modeling_fundamentals.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ch. 3: A Review of R Modeling Fundamentals</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

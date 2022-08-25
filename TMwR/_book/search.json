@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tidy Modeling with R: Notes & Exercises",
+    "section": "",
+    "text": "This is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
+  },
+  {
+    "objectID": "01_software_for_modeling/01_software_for_modeling.html",
+    "href": "01_software_for_modeling/01_software_for_modeling.html",
+    "title": "1  Chapter 1: Software for Modeling",
+    "section": "",
+    "text": "Note\n\n\n\nDefinition: Models are mathematical tools that can describe a system and capture relationships in the data given to them"
+  },
+  {
+    "objectID": "01_software_for_modeling/01_software_for_modeling.html#types-of-models",
+    "href": "01_software_for_modeling/01_software_for_modeling.html#types-of-models",
+    "title": "1  Chapter 1: Software for Modeling",
+    "section": "1.1 Types of Models",
+    "text": "1.1 Types of Models\n\nDescriptive models: To describe or illustrate characteristics of data. e.g. visually emphasise a trend or artifact\nInferential models: To produce a decision for a research question or to explore a specific hypothesis, similar to how statistical tests are used (remember t-tests & ANOVA are GLMs)\n\nInferential mode starts with an assumption about a population, then produces a statistical conclusion to confirm or reject that assumption.\n\n\n\n\n\n\nNote\n\n\n\nUltimately, a model for statistical inference posits: “If my data were truly independent (unbiased), and we fit a model to it, and the residuals of that model follow a known distribution X, then test statistic Y can be used to produce a p-value. Otherwise, the resulting p-value might be inaccurate.”\n\n\n\nPredictive models: The primary goal is that the predicted values have the highest possible fidelity to the true value of the new data.\n\nThere are two approaches — mechanistic (known mechanisms of first principles a priori, like knowing how to model effort by knowing it’s a combination of reward and risk) or empirical, where the model is defined only by the structure of the prediction\nThese can be lumped into supervised (known outcome, e.g. regression or classification) and unsupervised (no known outcome, e.g. pattern or cluster analysis)"
+  },
+  {
+    "objectID": "03_review_modeling_fundamentals/03_review_modeling_fundamentals.html",
+    "href": "03_review_modeling_fundamentals/03_review_modeling_fundamentals.html",
+    "title": "2  Ch. 3: A Review of R Modeling Fundamentals",
+    "section": "",
+    "text": "Let’s look at the crickets data."
+  },
+  {
+    "objectID": "03_review_modeling_fundamentals/03_review_modeling_fundamentals.html#tidymodels-goals",
+    "href": "03_review_modeling_fundamentals/03_review_modeling_fundamentals.html#tidymodels-goals",
+    "title": "2  Ch. 3: A Review of R Modeling Fundamentals",
+    "section": "2.1 Tidymodels goals",
+    "text": "2.1 Tidymodels goals\nTo unify modeling under the tidy design guide:\n\n\nIt is human centered, i.e. the tidyverse is designed specifically to support the activities of a human data analyst. - It is consistent, so that what you learn about one function or package can be applied to another, and the number of special cases that you need to remember is as small as possible.\n\n\nIt is composable, allowing you to solve complex problems by breaking them down into small pieces, supporting a rapid cycle of exploratory iteration to find the best solution.\nIt is inclusive, because the tidyverse is not just the collection of packages, but it is also the community of people who use them."
+  }
+]

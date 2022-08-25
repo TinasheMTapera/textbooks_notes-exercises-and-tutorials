@@ -1,0 +1,20 @@
+project:
+  type: book
+
+book:
+  title: "Tidy Modeling with R: Notes & Exercises"
+  author: "Tinashe M. Tapera"
+  date: "8/25/2022"
+  chapters:
+    - index.qmd
+    - 01_software_for_modeling/01_software_for_modeling.qmd
+    - 03_review_modeling_fundamentals/03_review_modeling_fundamentals.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+
+
+
