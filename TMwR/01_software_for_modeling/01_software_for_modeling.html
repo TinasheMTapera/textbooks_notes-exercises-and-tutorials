@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 1: Software for Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+<script src="01_software_for_modeling_files/libs/clipboard/clipboard.min.js"></script>
+<script src="01_software_for_modeling_files/libs/quarto-html/quarto.js"></script>
+<script src="01_software_for_modeling_files/libs/quarto-html/popper.min.js"></script>
+<script src="01_software_for_modeling_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="01_software_for_modeling_files/libs/quarto-html/anchor.min.js"></script>
+<link href="01_software_for_modeling_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="01_software_for_modeling_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="01_software_for_modeling_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="01_software_for_modeling_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="01_software_for_modeling_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Chapter 1: Software for Modeling</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Definition: Models are mathematical tools that can describe a system and capture relationships in the data given to them</p>
+</div>
+</div>
+<ul>
+<li>The utility of a model hinges on its ability to be reductive, or to reduce complex relationships to simpler terms.</li>
+</ul>
+<blockquote class="blockquote">
+<p>The Pit of Success: in stark contrast to a summit, a peak, or a journey across a desert to find victory through many trials and surprises, we want our customers to simply fall into winning practices by using our platform and frameworks.</p>
+</blockquote>
+<section id="types-of-models" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-models">Types of Models</h2>
+<ol type="1">
+<li><p><em>Descriptive models</em>: To describe or illustrate characteristics of data. e.g.&nbsp;visually emphasise a trend or artifact</p></li>
+<li><p><em>Inferential models</em>: To produce a decision for a research question or to explore a specific hypothesis, similar to how statistical tests are used (remember t-tests &amp; ANOVA are GLMs)</p></li>
+</ol>
+<p>Inferential mode starts with an assumption about a population, then produces a statistical conclusion to confirm or reject that assumption.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ultimately, a model for statistical inference posits: “If my data were truly independent (unbiased), and we fit a model to it, and the residuals of that model follow a known distribution X, then test statistic Y can be used to produce a p-value. Otherwise, the resulting p-value might be inaccurate.”</p>
+</div>
+</div>
+<ol start="3" type="1">
+<li><em>Predictive models</em>: The primary goal is that the predicted values have the highest possible fidelity to the true value of the new data.</li>
+</ol>
+<p>There are two approaches — mechanistic (known mechanisms of first principles a priori, like knowing how to model effort by knowing it’s a combination of reward and risk) or empirical, where the model is defined only by the structure of the prediction</p>
+<p>These can be lumped into supervised (known outcome, e.g.&nbsp;regression or classification) and unsupervised (no known outcome, e.g.&nbsp;pattern or cluster analysis)</p>
+</section>
+<section id="modeling-pipeline" class="level1">
+<h1>Modeling pipeline</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.tmwr.org/premade/modeling-process.svg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">modeling process</figcaption><p></p>
+</figure>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

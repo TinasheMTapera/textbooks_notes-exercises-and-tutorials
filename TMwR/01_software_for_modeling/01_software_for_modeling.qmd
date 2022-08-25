@@ -1,0 +1,38 @@
+---
+title: "Chapter 1: Software for Modeling"
+format: html
+---
+
+::: {.callout-note}
+Definition: Models are mathematical tools that can describe a system and capture relationships in the data given to them
+:::
+
+- The utility of a model hinges on its ability to be reductive, or to reduce complex relationships to simpler terms.
+
+> The Pit of Success: in stark contrast to a summit, a peak, or a journey across a desert to find victory through many trials and surprises, we want our customers to simply fall into winning practices by using our platform and frameworks.
+
+## Types of Models
+
+1. _Descriptive models_: To describe or illustrate characteristics of data. e.g. visually
+emphasise a trend or artifact
+
+2. _Inferential models_: To produce a decision for a research question or to explore a specific hypothesis, similar to how statistical tests are used (remember t-tests & ANOVA are GLMs)
+
+Inferential mode starts with an assumption about a population, then
+produces a statistical conclusion to confirm or reject that
+assumption.
+
+::: {.callout-note}
+Ultimately, a model for statistical inference posits: "If my data were truly independent (unbiased), and we fit a model to it, and the residuals of that model follow a known distribution X, then test statistic Y can be used to produce a p-value. Otherwise, the resulting p-value might be inaccurate."
+:::
+
+3. _Predictive models_: The primary goal is that the predicted values have the highest possible fidelity to the true value of the new data.
+
+There are two approaches — mechanistic (known mechanisms of first principles a priori, like knowing how to model effort by knowing it's a combination of reward and risk) or empirical, where the model is defined only by the structure of the prediction
+
+These can be lumped into supervised (known outcome, e.g. regression or classification) and unsupervised (no known outcome, e.g. pattern or cluster analysis)
+
+# Modeling pipeline
+
+![modeling process](https://www.tmwr.org/premade/modeling-process.svg)
+

@@ -1,0 +1,6 @@
+---
+title: "Ch. 3: A Review of R Modeling Fundamentals"
+format: html
+---
+
+Let's look at the `crickets` data.
