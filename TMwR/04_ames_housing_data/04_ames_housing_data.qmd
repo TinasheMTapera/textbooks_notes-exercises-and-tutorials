@@ -1,0 +1,69 @@
+---
+title: "Ch. 4: Introduction to Ames Housing Data"
+format: html
+---
+
+Load the data
+
+```{r}
+library(modeldata)
+
+data(ames)
+```
+
+## Some EDA
+
+First examine the outcome variable:
+
+```{r}
+library(tidymodels)
+
+ames %>%
+    ggplot(aes(x=Sale_Price)) +
+        geom_histogram(bins=50)
+```
+
+What are the quantiles and median?
+
+```{r}
+summary(ames$Sale_Price)
+```
+
+Show median:
+
+```{r}
+ames %T>%
+    {m <<- .$Sale_Price %>% median() } %>%
+    ggplot() +
+        geom_histogram(aes(x=Sale_Price), bins=50) +
+        geom_vline(xintercept = m, colour = "red")
+```
+
+Right skewed outcome, so log transforming will be recommended:
+
+
+```{r}
+ames %>%
+    ggplot(aes(x=Sale_Price)) +
+        geom_histogram(bins=50) +
+        scale_x_log10()
+```
+
+More normal, but with the disadvantage that interpretability may be lost.
+
+```{r}
+# move forward with this decision
+ames <- ames %>% mutate(Sale_Price = log10(Sale_Price))
+```
+
+Here's a quick EDA checklist:
+
+1. Identify the outcome variable
+    - What kind of distribution does it have? Is the distribution appropriate for modeling/ML?
+    - If categorical, are the classes balanced?
+    - Is it skewed?
+    - Are there outliers? How severe are they?
+2. For each predictor variable:
+    - What kind of distribution does it have/what is the count of categories?
+    - Do predictors autocorrelate?
+    - Does the predictor correlate with the outcome?

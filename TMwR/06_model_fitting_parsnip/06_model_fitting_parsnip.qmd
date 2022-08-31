@@ -1,0 +1,109 @@
+---
+title: "Chapter 6: Fitting Models with `parsnip`"
+format: html
+---
+
+```{r, include=FALSE}
+source("../ames_snippets.R")
+```
+
+`parsnip`, as part of the tidymodels approach, aims to
+standardise and unify modeling interfaces into
+3 basic steps:
+
+1. Specify the type of model based on its mathematical structure (e.g., linear regression, random forest, KNN, etc).
+
+2. Specify the engine for fitting the model. Most often this reflects the software package that should be used, like Stan or glmnet. These are models in their own right, and parsnip provides consistent interfaces by using these as engines for modeling.
+
+3. When required, declare the mode of the model. The mode reflects the type of prediction outcome. For numeric outcomes, the mode is regression; for qualitative outcomes, it is classification.13 If a model algorithm can only address one type of prediction outcome, such as linear regression, the mode is already set.
+
+For eg:
+
+```{r}
+library(tidymodels)
+
+linear_reg() %>% set_engine("lm") %>% translate()
+```
+
+Pretty cool!
+
+Now to fit some data to `ames`:
+
+```{r}
+lm_model <- 
+  linear_reg() %>% 
+  set_engine("lm")
+
+# for a formula interface
+lm_form_fit <- lm_model %>%
+    fit(Sale_Price ~ Longitude + Latitude, data=ames_train)
+
+# for an X= Y= interface
+lm_xy_fit <- lm_model %>%
+    fit_xy(
+        x = ames_train %>% select(Longitude, Latitude),
+        y = ames_train %>% pull(Sale_Price)
+    )
+
+#they are identical
+lm_xy_fit
+```
+
+In reference to standardisation, `parsnip` goes out of its
+way to ensure names are consistent across models:
+
+> If a practitioner were to include these names in a plot or table, would the people viewing those results understand the name?
+
+Use `translate()` to understand how a `parsnip` model get's translated to a library:
+
+
+```{r}
+rand_forest(trees = 1000, min_n = 5) %>% 
+  set_engine("ranger") %>% 
+  set_mode("regression") %>% 
+  translate()
+```
+
+It maintains two types of arguments, `main` arguments which are common across one or more models, and `engine` arguments which
+only pertain to the particular model/libary; e.g to make `ranger` do verbose, set it in the engine (not in `parsnip`'s main args):
+
+```{r}
+rand_forest(trees = 1000, min_n = 5) %>% 
+  set_engine("ranger", verbose = TRUE) %>% 
+  set_mode("regression") %>%
+  translate()
+```
+
+Then, use the handy `broom` package:
+
+```{r}
+tidy(lm_form_fit)
+```
+
+Next, to predict, use the whole fit object and some sample
+data with base R's `predict()`:
+
+```{r}
+ames_test_small <- ames_test %>% slice(1:5)
+predict(lm_form_fit, new_data = ames_test_small)
+```
+
+Tidymodels makes it easy to translate your work to other
+models from other packages. Here's the same workflow for
+a decision tree:
+
+```{r}
+tree_model <- 
+  decision_tree(min_n = 2) %>% 
+  set_engine("rpart") %>% 
+  set_mode("regression")
+
+tree_fit <- 
+  tree_model %>% 
+  fit(Sale_Price ~ Longitude + Latitude, data = ames_train)
+
+ames_test_small %>% 
+  select(Sale_Price) %>% 
+  bind_cols(predict(tree_fit, ames_test_small))
+```
+

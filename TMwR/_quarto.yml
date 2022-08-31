@@ -1,6 +1,9 @@
 project:
   type: book
 
+execute:
+  cache: true
+
 book:
   title: "Tidy Modeling with R: Notes & Exercises"
   author: "Tinashe M. Tapera"
@@ -9,6 +12,12 @@ book:
     - index.qmd
     - 01_software_for_modeling/01_software_for_modeling.qmd
     - 03_review_modeling_fundamentals/03_review_modeling_fundamentals.qmd
+    - 04_ames_housing_data/04_ames_housing_data.qmd
+    - 05_spending_data/05_spending_data.qmd
+    - 06_model_fitting_parsnip/06_model_fitting_parsnip.qmd
+    - 07_model_workflow/07_model_workflow.qmd
+    - 08_feat_eng_recipes/08_feat_eng_recipes.qmd
+    - 09_judging_models/09_judging_models.qmd
 
 bibliography: references.bib
 

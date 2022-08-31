@@ -1,0 +1,100 @@
+---
+title: "Chapter 8: Feature Engineering with Recipes"
+format: html
+---
+
+```{r, include=FALSE}
+source("../ames_snippets.R")
+
+lm_wflow <- 
+  lm_wflow %>% 
+  remove_recipe() %>% 
+  add_variables(outcome = Sale_Price, predictors = c(Longitude, Latitude))
+```
+
+Tidymodels helps with feature engineering, too. Refer to [this table](https://www.tmwr.org/pre-proc-table.html#pre-proc-table) whenever you're doing a modeling project for a quick reference
+of models and required/recommended preprocessing steps for data.
+
+We'll use the `recipes` package to develop feature engineering pipelines.
+
+Below, define a `recipe` object and then add `steps` to it:
+
+
+```{r}
+library(tidymodels) # Includes the recipes package
+tidymodels_prefer()
+
+simple_ames <- 
+  recipe(Sale_Price ~ Neighborhood + Gr_Liv_Area + Year_Built + Bldg_Type,
+         data = ames_train) %>%
+  step_log(Gr_Liv_Area, base = 10) %>% 
+  step_dummy(all_nominal_predictors())
+```
+
+
+```{r}
+simple_ames
+```
+
+We can add this recipe to our previous workflow:
+
+```{r}
+lm_wflow <- 
+  lm_wflow %>% 
+  remove_variables() %>% 
+  add_recipe(simple_ames)
+```
+
+```{r}
+lm_wflow
+```
+
+Now the `preprocessor` step is a recipe! We can execute the
+recipe and model with `fit()` as before:
+
+
+```{r}
+lm_fit <- fit(lm_wflow, ames_train)
+predict(lm_fit, ames_test %>% slice(1:3))
+```
+
+You can extract the recipe after the model has been fitted:
+
+```{r}
+lm_fit %>% 
+  extract_recipe(estimated = TRUE)
+
+lm_fit %>% 
+  # This returns the parsnip object:
+  extract_fit_parsnip() %>% 
+  # Now tidy the linear model object:
+  tidy() %>% 
+  slice(1:5)
+```
+
+### Recipe steps
+
+You can see the exhaustive list of recipe steps [here](https://recipes.tidymodels.org/reference/index.html). Here are annotated examples:
+
+```{r}
+simple_ames <- 
+  recipe(Sale_Price ~ Neighborhood + Gr_Liv_Area + Year_Built + Bldg_Type,
+         data = ames_train) %>%
+    
+    # log transform step
+  step_log(Gr_Liv_Area, base = 10) %>%  
+    # assign factors with few counts to "other"
+  step_other(Neighborhood, threshold = 0.01) %>% 
+    # create dummy variables (one hot encoding)
+  step_dummy(all_nominal_predictors()) %>%
+    # create an interaction between gr_liv_are and each one hot encoded Bldg_Type
+  step_interact( ~ Gr_Liv_Area:starts_with("Bldg_Type_") ) %>%
+    # add a natural spline to a feature
+  step_ns(Latitude, deg_free = 20) %>%
+    # use PCA to create new, uncorrelated features 
+    # from all the variables representing "size"
+  step_pca(matches("(SF$)|(Gr_Liv)"))
+```
+
+You can use recipes to "register" your model in R, so that the
+pipeline can be reproduced and rerun at any time.

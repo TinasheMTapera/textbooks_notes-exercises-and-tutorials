@@ -1,0 +1,96 @@
+---
+title: "Ch. 5: Spending our Data"
+format: html
+---
+
+When you start off modeling some data, you can potentially do
+an infinite number of things to it e.g. parameter estimation,
+model selection, tuning, performance QA, etc. However, if you
+continuously do these tasks to any and all parts of your
+data simultaneously, you will introduce _bias_ into the model
+through leakage e.g. if you use some of your test data in
+model parameter tuning. This chapter suggests setting a mental
+heuristic for creating a data budget that you can spend.
+
+A common first step is "splitting" data into a training and
+testing set.
+
+```{r, include=FALSE}
+source("../ames_snippets.R")
+```
+
+
+Example using `rsample` to get an 80-20 split:
+
+```{r}
+library(tidymodels)
+set.seed(501)
+
+ames_split <- initial_split(ames, prop=.8)
+
+ames_split
+
+```
+
+Use the functions below to get your data into split dfs:
+
+```{r}
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+```
+
+In the case of classification with imbalanced classes,
+stratified classification can be used to do splitting
+separately for each class and then combining the result.
+For regression, a similar approach is to stratify by
+quantiles:
+
+```{r}
+qs <- quantile(ames$Sale_Price)[2:4]
+ames %>%
+    ggplot(aes(x=Sale_Price)) +
+        geom_histogram(bins=50) +
+        geom_vline(xintercept = qs, lty="dashed")
+
+```
+
+Within each, it will run the sampling for train and test :)
+
+```{r}
+ames_split <- initial_split(ames, prop = 0.80, strata = Sale_Price)
+ames_train <- training(ames_split)
+ames_test  <-  testing(ames_split)
+
+dim(ames_train)
+```
+
+::: {.callout-tip}
+There is very little downside to using stratified sampling
+:::
+
+Note that for time series data, you can use `initial_time_split()`
+to create a train test split; this assumes that you want later
+data to be forecasted and earlier data to be the training data.
+
+It's also important to separate your notion of a test set from
+a validation set. A _validation_ set is what you use to
+_validate your training models_, i.e. you use it to tune
+parameters. A test set must remain an unbiased (unseen) data
+set that the final model is evaluated on.
+
+### Multilevel Modeling
+
+When data points in the outcome are structurally or conceptually
+related to each other, this might be a case for multilevel
+modeling. e.g. longitudinal data where one participant has
+multiple time points/repeated measures (or a mobile phone study where one participant has many EMA responses 😉)
+
+### Other considerations
+
+- keep your test set _far away_ from your training set
+- no matter your operations on the data, keep your
+test set as close to real world data as possible
+- These considerations are for training and evaluation of the model; once you know the model is the best it can be,
+you are free to use the full dataset to productionize 
+the model
+

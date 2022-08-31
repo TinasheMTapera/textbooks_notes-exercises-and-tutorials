@@ -1,0 +1,154 @@
+---
+title: "Chapter 7: A Model Workflow"
+format: html
+---
+
+```{r, include=FALSE}
+source("../ames_snippets.R")
+```
+
+
+It's important to consider where the "modeling" concept
+begins and ends. For eg PCA is part of modeling. `tidymodels`
+recommends bundling model components into "workflows" with
+the `workflows` package.[how different is this from `targets`?]{.aside}
+
+
+```{r}
+library(tidymodels)  # Includes the workflows package
+tidymodels_prefer()
+
+lm_model <- 
+  linear_reg() %>% 
+  set_engine("lm")
+```
+
+Create a workflow object:
+
+```{r}
+lm_wflow <- 
+  workflow() %>% 
+  add_model(lm_model)
+```
+
+The model has to be something from `parsnip`. Next, Add the model formula:
+
+```{r}
+lm_wflow <- 
+  lm_wflow %>% 
+  add_formula(Sale_Price ~ Longitude + Latitude)
+```
+
+Then fit the model on training data:
+
+```{r}
+lm_fit <- fit(lm_wflow, ames_train)
+lm_fit
+```
+
+Predict is easy:
+
+```{r}
+predict(lm_fit, ames_test %>% slice(1:3))
+```
+
+Alternately, you can provide `outcome` and `predictors` using `tidyselect` methods:
+
+```{r}
+lm_wflow <- 
+  lm_wflow %>% 
+  remove_formula() %>% 
+  add_variables(outcome = Sale_Price, predictors = c(Longitude, Latitude))
+lm_wflow
+```
+
+
+
+```{r}
+#runs the same!
+fit(lm_wflow, ames_train)
+```
+
+Instead of using `add_formula()`, you can add the formula
+at the same time as you add the model. This is useful
+to get around the weirdness of different libraries requiring
+different model specifications:
+
+```{r}
+library(multilevelmod)
+#library(lme4)
+library(nlme)
+
+multilevel_spec <- linear_reg() %>% set_engine("lmer")
+
+multilevel_workflow <- 
+  workflow() %>% 
+  # Pass the data along as-is: 
+  add_variables(outcome = distance, predictors = c(Sex, age, Subject)) %>% 
+  add_model(multilevel_spec, 
+            # This formula is given to the model
+            formula = distance ~ Sex + (age | Subject))
+
+multilevel_fit <- fit(multilevel_workflow, data = Orthodont)
+multilevel_fit
+```
+
+## Specifying multiple models
+
+Here's how to specify multiple models at once using the `workflowset` library:
+
+
+```{r}
+location <- list(
+  longitude = Sale_Price ~ Longitude,
+  latitude = Sale_Price ~ Latitude,
+  coords = Sale_Price ~ Longitude + Latitude,
+  neighborhood = Sale_Price ~ Neighborhood
+)
+
+library(workflowsets)
+location_models <- workflow_set(preproc = location, models = list(lm = lm_model))
+location_models
+```
+
+Inspect:
+```{r}
+location_models$info[[1]]
+```
+
+Pull:
+
+```{r}
+extract_workflow(location_models, id = "coords_lm")
+```
+
+Now to run, we use `purrr::map`
+
+
+```{r}
+location_models <-
+   location_models %>%
+   mutate(fit = map(info, ~ fit(.x$workflow[[1]], ames_train)))
+location_models
+```
+
+
+```{r}
+location_models$fit[[1]]
+```
+
+Finally, you can use `last_fit()` to wrap the whole process,
+a workflow + fit + prediction, using the initial split object:
+
+```{r}
+final_lm_res <- last_fit(lm_wflow, ames_split)
+final_lm_res
+```
+
+
+```{r}
+fitted_lm_wflow <- extract_workflow(final_lm_res)
+collect_metrics(final_lm_res)
+collect_predictions(final_lm_res) %>% slice(1:5)
+
+```

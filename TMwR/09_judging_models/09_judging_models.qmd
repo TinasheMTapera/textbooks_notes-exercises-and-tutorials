@@ -1,0 +1,198 @@
+---
+title: "Chapter 9: Judging Model Effectiveness"
+format: html
+---
+
+```{r, include=FALSE}
+source("../ames_snippets.r")
+```
+
+
+This chapter is all about evaluating how a model performs. 
+Picking an appropriate metric is important as illustrated by his fig 👇
+![t](https://www.tmwr.org/figures/performance-reg-metrics-1.png).
+
+ An inferential model is used primarily to understand relationships, and typically emphasizes the choice (and validity) of probabilistic distributions and other generative qualities that define the model. For a model used primarily for prediction, by contrast, predictive strength is of primary importance and other concerns about underlying statistical qualities may be less important
+
+ Generally, Kuhn and Silge _recommend_ that even if your primary 
+ work is developing inferential models, you should still consider
+ predictive strength as a useful model performance metric.
+
+ > ...optimization of statistical characteristics of the model does not imply that the model fits the data well. Even for purely inferential models, some measure of fidelity to the data should accompany the inferential results. Using this, the consumers of the analyses can calibrate their expectations of the results.
+
+ Tidymodels recommends model evaluation with the `yardstick` package.
+
+ Let's make predictions with `ames`:
+
+
+```{r}
+ames_test_res <- predict(lm_fit, new_data = ames_test %>% select(-Sale_Price))
+ames_test_res
+```
+
+
+```{r}
+ames_test_res <- bind_cols(ames_test_res, ames_test %>% select(Sale_Price))
+ames_test_res
+```
+
+We can simply plot to evaluate the data fidelity:
+
+```{r}
+ggplot(ames_test_res, aes(x = Sale_Price, y = .pred)) + 
+  # Create a diagonal line:
+  geom_abline(lty = 2) + 
+  geom_point(alpha = 0.5) + 
+  labs(y = "Predicted Sale Price (log10)", x = "Sale Price (log10)") +
+  # Scale and size the x- and y-axis uniformly:
+  coord_obs_pred()
+```
+
+Here's the RMSE for this prediction:
+
+
+```{r}
+rmse(ames_test_res, truth = Sale_Price, estimate = .pred)
+```
+In `yardstick`, you can derive multiple metrics at once with `metric_set()`:
+
+```{r}
+ames_metrics <- metric_set(rmse, rsq, mae)
+ames_metrics(ames_test_res, truth = Sale_Price, estimate = .pred)
+```
+
+For binary classification, the case is quite similar:
+
+```{r}
+data(two_class_example)
+tibble(two_class_example)
+```
+
+Here's a confusion matrix:
+
+
+```{r}
+conf_mat(two_class_example, truth = truth, estimate = predicted)
+```
+
+Simple accuracy:
+
+```{r}
+accuracy(two_class_example, truth, predicted)
+```
+
+We can calculate the [Matthews correlation coefficient (phi coefficient)](https://en.wikipedia.org/wiki/Phi_coefficient) just as easily:
+
+```{r}
+mcc(two_class_example, truth, predicted)
+```
+
+Or the [f statistic](https://en.wikipedia.org/wiki/F-score):
+
+```{r}
+f_meas(two_class_example, truth, predicted)
+```
+
+All together now!
+
+```{r}
+classification_metrics <- metric_set(accuracy, mcc, f_meas)
+classification_metrics(two_class_example, truth = truth, estimate = predicted)
+```
+
+What if the event of interest (i.e. the outcome level you're concerned about) is the second value, like 0/1? You can specify this in the metric:
+
+```{r}
+f_meas(two_class_example, truth, predicted, event_level = "second")
+```
+
+Everybody loves ROC curves too... here's how it happens in tidymodels:
+
+```{r}
+two_class_curve <- roc_curve(two_class_example, truth, Class1)
+two_class_curve
+roc_auc(two_class_example, truth, Class1)
+```
+
+Recall that the ROC curce describes how a classifier performs
+in relation to the discrimination threshold (where you cutoff
+the probabilities). The X axis shows how false positive rate,
+and the y axis shows the true positive rate. The identity line shows what a standard model generating random guesses would achieve.
+A really good model
+will have a large area under the curve (AUC), because it is
+correctly guessing true positives at a faster rate than it is
+guessing false positives:
+
+![ROC Curve](https://upload.wikimedia.org/wikipedia/commons/6/6b/Roccurves.png)
+
+There's an autoplot method for the ROC (though I'm not sure why
+you'd not just plot this yourself; it's like four lines?)
+
+
+```{r}
+autoplot(two_class_curve)
+```
+
+```{r}
+two_class_curve %>%
+    ggplot(aes(x=(1-specificity), y = sensitivity)) +
+    geom_line()
+```
+
+It's 3 lines.
+
+
+Here's a multiclass problem:
+
+
+```{r}
+data(hpc_cv)
+tibble(hpc_cv)
+```
+
+The methods are pretty much identical in Tidymodels:
+
+```{r}
+accuracy(hpc_cv, obs, pred)
+mcc(hpc_cv, obs, pred)
+```
+
+Sensitivity and specificity are not designed for multiclass
+problems, but can be extended in this case. You can do this in
+three main ways:
+
+- **Macro averaging**: This computes a set of one-versus-all
+metrics that are averaged at the end
+- **Macro weighted averaging**: Similar to macro averaging, but weights the score by the number of samples in each class
+- **Micro averaging**: Computes the contribution for each class,
+then averages them, then computes a single metric for the aggregate
+
+`yardstick` implements these for us:
+
+```{r}
+sensitivity(hpc_cv, obs, pred, estimator = "macro")
+sensitivity(hpc_cv, obs, pred, estimator = "macro_weighted")
+sensitivity(hpc_cv, obs, pred, estimator = "micro")
+
+```
+
+For a multiclass ROC, specify all the columns to get a [Hand&Till estimate]():
+
+```{r}
+roc_auc(hpc_cv, obs, VF, F, M, L)
+roc_auc(hpc_cv, obs, VF, F, M, L, estimator = "macro_weighted")
+```
+
+You can, naturally, create grouped metrics:
+
+```{r}
+hpc_cv %>% 
+  group_by(Resample) %>% 
+  accuracy(obs, pred)
+
+hpc_cv %>% 
+  group_by(Resample) %>% 
+  roc_curve(obs, VF, F, M, L) %>% 
+  autoplot()
+```
+
