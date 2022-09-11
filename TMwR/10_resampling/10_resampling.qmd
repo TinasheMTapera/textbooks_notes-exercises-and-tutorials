@@ -62,7 +62,27 @@ estimate_perf(rf_fit, ames_test)
 ```
 
 The RMSE is actually _higher_! How could this happen? Well,
-in statistics, _low bias_ models perform great in training
-but poorly in testing because they basically memorise the
-training data. 
+in statistics, _low bias_ models are those that closely
+approximate the data. In this case, the bias was so low
+that the training data was basically memorised.
 
+The main takeaway from this example is that repredicting the training set will result in an artificially optimistic estimate of performance. It is a bad idea for most models. Instead, utilise resampling.
+
+![Resampling illustrated](https://www.tmwr.org/premade/resampling.svg)
+
+Basically, the model is fit on the _analysis_ set, and tested on the _assessment_ set, repeatedly (this language helps differentiate this process from training and testing).
+
+## Resampling Methods
+
+### 1. Cross Validation
+
+For each iteration, one fold is held out for assessment statistics and the remaining folds are substrate for the model. This process continues for each fold so that three models produce three sets of performance statistics.
+
+Kuhn et al. recommend 10 folds to balance bias and variance.
+
+You can easily create folds with `tidymodels`
+
+```{r}
+ames_folds <- vfold_cv(ames_train, v = 10)
+ames_folds
+```
