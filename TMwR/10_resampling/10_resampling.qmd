@@ -1,0 +1,68 @@
+---
+title: "Chapter 10: Resampling for Evaluating Performance"
+format: html
+---
+
+```{r, include=FALSE}
+source("../ames_snippets.r")
+```
+
+You can evaluate a model on the test set, but this is not
+recommended for models where you need to _tune_ your model
+parameters — tuning params on the test set introduces _leakage_.
+A better approach is to _resample_ your training set. Tidymodels
+provides great functions for doing this.
+
+Here, we fit a new model to the `ames` dataset: a random forest.
+Notice that we start a new workflow object here:
+
+```{r}
+rf_model <- 
+  rand_forest(trees = 1000) %>% 
+  set_engine("ranger") %>% 
+  set_mode("regression")
+
+rf_wflow <- 
+  workflow() %>% 
+  add_formula(
+    Sale_Price ~ Neighborhood + Gr_Liv_Area + Year_Built + Bldg_Type + 
+      Latitude + Longitude) %>% 
+  add_model(rf_model) 
+
+rf_fit <- rf_wflow %>% fit(data = ames_train)
+```
+
+Now, compare the `lm` workflow agains the `ranger::random_forest` workflow with tidymodels:
+
+```{r}
+estimate_perf <- function(model, dat) {
+    # Capture the names of the `model` and `dat` objects
+    cl <- match.call()
+    obj_name <- as.character(cl$model)
+    data_name <- as.character(cl$dat)
+    data_name <- gsub("ames_", "", data_name)
+
+    reg_metrics <- metric_set(rmse, rsq)
+      model %>%
+    predict(dat) %>%
+    bind_cols(dat %>% select(Sale_Price)) %>%
+    reg_metrics(Sale_Price, .pred) %>%
+    select(-.estimator) %>%
+    mutate(object = obj_name, data = data_name)
+}
+
+bind_rows(list(Random_forest=estimate_perf(rf_fit, ames_train), LM=estimate_perf(lm_fit, ames_train)), .id="id")
+```
+
+So, Random Forest is clearly superior, right? Well, let's see
+how it performs on the test set:
+
+```{r}
+estimate_perf(rf_fit, ames_test)
+```
+
+The RMSE is actually _higher_! How could this happen? Well,
+in statistics, _low bias_ models perform great in training
+but poorly in testing because they basically memorise the
+training data. 
+
