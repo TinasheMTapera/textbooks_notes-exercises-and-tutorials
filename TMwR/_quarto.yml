@@ -18,6 +18,7 @@ book:
     - 07_model_workflow/07_model_workflow.qmd
     - 08_feat_eng_recipes/08_feat_eng_recipes.qmd
     - 09_judging_models/09_judging_models.qmd
+    - 10_resampling/10_resampling.qmd
 
 bibliography: references.bib
 

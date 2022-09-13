@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Tidy Modeling with R: Notes &amp; Exercises - 9&nbsp; Chapter 10: Resampling for Evaluating Performance</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../09_judging_models/09_judging_models.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 10: Resampling for Evaluating Performance</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Tidy Modeling with R: Notes &amp; Exercises</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_software_for_modeling/01_software_for_modeling.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Software for Modeling</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_review_modeling_fundamentals/03_review_modeling_fundamentals.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Ch. 3: A Review of R Modeling Fundamentals</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_ames_housing_data/04_ames_housing_data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ch. 4: Introduction to Ames Housing Data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05_spending_data/05_spending_data.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Ch. 5: Spending our Data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06_model_fitting_parsnip/06_model_fitting_parsnip.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Chapter 6: Fitting Models with <code>parsnip</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07_model_workflow/07_model_workflow.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Chapter 7: A Model Workflow</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../08_feat_eng_recipes/08_feat_eng_recipes.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 8: Feature Engineering with Recipes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../09_judging_models/09_judging_models.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 9: Judging Model Effectiveness</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../10_resampling/10_resampling.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 10: Resampling for Evaluating Performance</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#resampling-methods" id="toc-resampling-methods" class="nav-link active" data-scroll-target="#resampling-methods"><span class="toc-section-number">9.1</span>  Resampling Methods</a>
+  <ul class="collapse">
+  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation"><span class="toc-section-number">9.1.1</span>  1. Cross Validation</a></li>
+  <li><a href="#repeated-cv" id="toc-repeated-cv" class="nav-link" data-scroll-target="#repeated-cv"><span class="toc-section-number">9.1.2</span>  2. Repeated CV</a></li>
+  <li><a href="#loocv" id="toc-loocv" class="nav-link" data-scroll-target="#loocv"><span class="toc-section-number">9.1.3</span>  3. LOOCV</a></li>
+  <li><a href="#monte-carlo-cv" id="toc-monte-carlo-cv" class="nav-link" data-scroll-target="#monte-carlo-cv"><span class="toc-section-number">9.1.4</span>  4. Monte-Carlo CV</a></li>
+  <li><a href="#validation-set" id="toc-validation-set" class="nav-link" data-scroll-target="#validation-set"><span class="toc-section-number">9.1.5</span>  5. Validation Set</a></li>
+  <li><a href="#bootstrapping" id="toc-bootstrapping" class="nav-link" data-scroll-target="#bootstrapping"><span class="toc-section-number">9.1.6</span>  6. Bootstrapping</a></li>
+  <li><a href="#rolling-forecasting-origin-sampling" id="toc-rolling-forecasting-origin-sampling" class="nav-link" data-scroll-target="#rolling-forecasting-origin-sampling"><span class="toc-section-number">9.1.7</span>  7. Rolling Forecasting Origin Sampling</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Chapter 10: Resampling for Evaluating Performance</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>You can evaluate a model on the test set, but this is not recommended for models where you need to <em>tune</em> your model parameters — tuning params on the test set introduces <em>leakage</em>. A better approach is to <em>resample</em> your training set. Tidymodels provides great functions for doing this.</p>
+<p>Here, we fit a new model to the <code>ames</code> dataset: a random forest. Notice that we start a new workflow object here:</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-2_b346b1e25eb91022a88b148e94e54702">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>rf_model <span class="ot">&lt;-</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rand_forest</span>(<span class="at">trees =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>rf_wflow <span class="ot">&lt;-</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_formula</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    Sale_Price <span class="sc">~</span> Neighborhood <span class="sc">+</span> Gr_Liv_Area <span class="sc">+</span> Year_Built <span class="sc">+</span> Bldg_Type <span class="sc">+</span> </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      Latitude <span class="sc">+</span> Longitude) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(rf_model) </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>rf_fit <span class="ot">&lt;-</span> rf_wflow <span class="sc">%&gt;%</span> <span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, compare the <code>lm</code> workflow agains the <code>ranger::random_forest</code> workflow with tidymodels:</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-3_55094137d958934ff2114ca68c27ce26">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>estimate_perf <span class="ot">&lt;-</span> <span class="cf">function</span>(model, dat) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Capture the names of the `model` and `dat` objects</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    cl <span class="ot">&lt;-</span> <span class="fu">match.call</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    obj_name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(cl<span class="sc">$</span>model)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    data_name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(cl<span class="sc">$</span>dat)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    data_name <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"ames_"</span>, <span class="st">""</span>, data_name)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    reg_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      model <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">predict</span>(dat) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_cols</span>(dat <span class="sc">%&gt;%</span> <span class="fu">select</span>(Sale_Price)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reg_metrics</span>(Sale_Price, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>.estimator) <span class="sc">%&gt;%</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">object =</span> obj_name, <span class="at">data =</span> data_name)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="fu">list</span>(<span class="at">Random_forest=</span><span class="fu">estimate_perf</span>(rf_fit, ames_train), <span class="at">LM=</span><span class="fu">estimate_perf</span>(lm_fit, ames_train)), <span class="at">.id=</span><span class="st">"id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 5
+  id            .metric .estimate object data 
+  &lt;chr&gt;         &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;
+1 Random_forest rmse       0.0365 rf_fit train
+2 Random_forest rsq        0.960  rf_fit train
+3 LM            rmse       0.0754 lm_fit train
+4 LM            rsq        0.816  lm_fit train</code></pre>
+</div>
+</div>
+<p>So, Random Forest is clearly superior, right? Well, let’s see how it performs on the test set:</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-4_ffbff49449a346a551bb2a2c91a1fe5c">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">estimate_perf</span>(rf_fit, ames_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  .metric .estimate object data 
+  &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;
+1 rmse       0.0704 rf_fit test 
+2 rsq        0.852  rf_fit test </code></pre>
+</div>
+</div>
+<p>The RMSE is actually <em>higher</em>! How could this happen? Well, in statistics, <em>low bias</em> models are those that closely approximate the data. In this case, the bias was so low that the training data was basically memorised.</p>
+<p>The main takeaway from this example is that repredicting the training set will result in an artificially optimistic estimate of performance. It is a bad idea for most models. Instead, utilise resampling.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.tmwr.org/premade/resampling.svg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Resampling illustrated</figcaption><p></p>
+</figure>
+</div>
+<p>Basically, the model is fit on the <em>analysis</em> set, and tested on the <em>assessment</em> set, repeatedly (this language helps differentiate this process from training and testing).</p>
+<section id="resampling-methods" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="resampling-methods"><span class="header-section-number">9.1</span> Resampling Methods</h2>
+<section id="cross-validation" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="cross-validation"><span class="header-section-number">9.1.1</span> 1. Cross Validation</h3>
+<p>For each iteration, one fold is held out for assessment statistics and the remaining folds are substrate for the model. This process continues for each fold so that three models produce three sets of performance statistics.</p>
+<p>Kuhn et al.&nbsp;recommend 10 folds to balance bias and variance.</p>
+<p>You can easily create folds with <code>tidymodels</code></p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-5_30cecaae99d1f8e31da90b23832de19b">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ames_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">10</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ames_folds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#  10-fold cross-validation 
+# A tibble: 10 × 2
+   splits             id    
+   &lt;list&gt;             &lt;chr&gt; 
+ 1 &lt;split [2107/235]&gt; Fold01
+ 2 &lt;split [2107/235]&gt; Fold02
+ 3 &lt;split [2108/234]&gt; Fold03
+ 4 &lt;split [2108/234]&gt; Fold04
+ 5 &lt;split [2108/234]&gt; Fold05
+ 6 &lt;split [2108/234]&gt; Fold06
+ 7 &lt;split [2108/234]&gt; Fold07
+ 8 &lt;split [2108/234]&gt; Fold08
+ 9 &lt;split [2108/234]&gt; Fold09
+10 &lt;split [2108/234]&gt; Fold10</code></pre>
+</div>
+</div>
+<p>In order to access each fold’s analysis or assessment subset, use the functions:</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-6_a9787e83984a8866089c5344a76d559e">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ames_folds<span class="sc">$</span>splits[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">analysis</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2107   74</code></pre>
+</div>
+</div>
+<p>There are other methods of cross validation available though:</p>
+</section>
+<section id="repeated-cv" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="repeated-cv"><span class="header-section-number">9.1.2</span> 2. Repeated CV</h3>
+<p>You can easily create repeated folds with the same strategy:</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-7_ace9cf7fe3aa1896a0dfd513d104353c">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">10</span>, <span class="at">repeats =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#  10-fold cross-validation repeated 5 times 
+# A tibble: 50 × 3
+   splits             id      id2   
+   &lt;list&gt;             &lt;chr&gt;   &lt;chr&gt; 
+ 1 &lt;split [2107/235]&gt; Repeat1 Fold01
+ 2 &lt;split [2107/235]&gt; Repeat1 Fold02
+ 3 &lt;split [2108/234]&gt; Repeat1 Fold03
+ 4 &lt;split [2108/234]&gt; Repeat1 Fold04
+ 5 &lt;split [2108/234]&gt; Repeat1 Fold05
+ 6 &lt;split [2108/234]&gt; Repeat1 Fold06
+ 7 &lt;split [2108/234]&gt; Repeat1 Fold07
+ 8 &lt;split [2108/234]&gt; Repeat1 Fold08
+ 9 &lt;split [2108/234]&gt; Repeat1 Fold09
+10 &lt;split [2108/234]&gt; Repeat1 Fold10
+# … with 40 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="loocv" class="level3" data-number="9.1.3">
+<h3 data-number="9.1.3" class="anchored" data-anchor-id="loocv"><span class="header-section-number">9.1.3</span> 3. LOOCV</h3>
+<p>You can use the function <code>loo_cv()</code> to get leave-one-out cross-validation.</p>
+</section>
+<section id="monte-carlo-cv" class="level3" data-number="9.1.4">
+<h3 data-number="9.1.4" class="anchored" data-anchor-id="monte-carlo-cv"><span class="header-section-number">9.1.4</span> 4. Monte-Carlo CV</h3>
+<p>MCCV is similar to repeated CV but uses the assessment set as the target, selecting a fixed proportion of data at a time randomly. This means that each assessment set does not have to be mutually exclusive.</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-8_8083ebfce4af0fed1768e2ba8a3a3a7d">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mc_cv</span>(ames_train, <span class="at">prop =</span> <span class="dv">9</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">times =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Monte Carlo cross-validation (0.9/0.1) with 20 resamples  
+# A tibble: 20 × 2
+   splits             id        
+   &lt;list&gt;             &lt;chr&gt;     
+ 1 &lt;split [2107/235]&gt; Resample01
+ 2 &lt;split [2107/235]&gt; Resample02
+ 3 &lt;split [2107/235]&gt; Resample03
+ 4 &lt;split [2107/235]&gt; Resample04
+ 5 &lt;split [2107/235]&gt; Resample05
+ 6 &lt;split [2107/235]&gt; Resample06
+ 7 &lt;split [2107/235]&gt; Resample07
+ 8 &lt;split [2107/235]&gt; Resample08
+ 9 &lt;split [2107/235]&gt; Resample09
+10 &lt;split [2107/235]&gt; Resample10
+11 &lt;split [2107/235]&gt; Resample11
+12 &lt;split [2107/235]&gt; Resample12
+13 &lt;split [2107/235]&gt; Resample13
+14 &lt;split [2107/235]&gt; Resample14
+15 &lt;split [2107/235]&gt; Resample15
+16 &lt;split [2107/235]&gt; Resample16
+17 &lt;split [2107/235]&gt; Resample17
+18 &lt;split [2107/235]&gt; Resample18
+19 &lt;split [2107/235]&gt; Resample19
+20 &lt;split [2107/235]&gt; Resample20</code></pre>
+</div>
+</div>
+</section>
+<section id="validation-set" class="level3" data-number="9.1.5">
+<h3 data-number="9.1.5" class="anchored" data-anchor-id="validation-set"><span class="header-section-number">9.1.5</span> 5. Validation Set</h3>
+<p>You can use a simple validation set split when you have sufficient data to not worry about tuning over multiple folds <img src="https://www.tmwr.org/premade/validation-alt.svg" class="img-fluid" alt="Validation"></p>
+</section>
+<section id="bootstrapping" class="level3" data-number="9.1.6">
+<h3 data-number="9.1.6" class="anchored" data-anchor-id="bootstrapping"><span class="header-section-number">9.1.6</span> 6. Bootstrapping</h3>
+<p>Bootstrapping is similar to CV but samples are drawn with replacement, meaning that some training set data points are selected multiple times for the analysis set.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.tmwr.org/premade/bootstraps.svg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">bootstrap</figcaption><p></p>
+</figure>
+</div>
+<p>It’s similarly easy:</p>
+<div class="cell" data-hash="10_resampling_cache/html/unnamed-chunk-9_f9feeeac1cc7074fc5602a6e37595224">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bootstraps</span>(ames_train, <span class="at">times =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Bootstrap sampling 
+# A tibble: 5 × 2
+  splits             id        
+  &lt;list&gt;             &lt;chr&gt;     
+1 &lt;split [2342/875]&gt; Bootstrap1
+2 &lt;split [2342/889]&gt; Bootstrap2
+3 &lt;split [2342/876]&gt; Bootstrap3
+4 &lt;split [2342/862]&gt; Bootstrap4
+5 &lt;split [2342/869]&gt; Bootstrap5</code></pre>
+</div>
+</div>
+</section>
+<section id="rolling-forecasting-origin-sampling" class="level3" data-number="9.1.7">
+<h3 data-number="9.1.7" class="anchored" data-anchor-id="rolling-forecasting-origin-sampling"><span class="header-section-number">9.1.7</span> 7. Rolling Forecasting Origin Sampling</h3>
+<p>This is a special kind of resampling that ensures to respect time-based correlation in the resampling approach.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://www.tmwr.org/premade/rolling.svg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Forecast sampling</figcaption><p></p>
+</figure>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../09_judging_models/09_judging_models.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chapter 9: Judging Model Effectiveness</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

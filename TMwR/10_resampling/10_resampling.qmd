@@ -86,3 +86,65 @@ You can easily create folds with `tidymodels`
 ames_folds <- vfold_cv(ames_train, v = 10)
 ames_folds
 ```
+
+In order to access each fold's analysis or assessment subset, use the functions:
+
+```{r}
+ames_folds$splits[[1]] %>% 
+  analysis() %>% 
+  dim()
+```
+
+There are other methods of cross validation available though:
+
+### 2. Repeated CV
+
+You can easily create repeated folds with the same strategy:
+
+
+```{r}
+vfold_cv(ames_train, v = 10, repeats = 5)
+```
+
+### 3. LOOCV
+
+You can use the function `loo_cv()` to get leave-one-out cross-validation.
+
+### 4. Monte-Carlo CV
+
+MCCV is similar to repeated CV but uses the assessment set as the target,
+selecting a fixed proportion of data at a time randomly. This means that
+each assessment set does not have to be mutually exclusive.
+
+
+```{r}
+mc_cv(ames_train, prop = 9/10, times = 20)
+```
+
+### 5. Validation Set
+
+You can use a simple validation set split when you have sufficient data to not
+worry about tuning over multiple folds ![Validation](https://www.tmwr.org/premade/validation-alt.svg)
+
+### 6. Bootstrapping
+
+Bootstrapping is similar to CV but samples are drawn with replacement, meaning
+that some training set data points are selected multiple times for the analysis set.
+
+![bootstrap](https://www.tmwr.org/premade/bootstraps.svg)
+
+It's similarly easy:
+
+
+```{r}
+bootstraps(ames_train, times = 5)
+```
+
+### 7. Rolling Forecasting Origin Sampling
+
+This is a special kind of resampling that ensures to respect
+time-based correlation in the resampling approach.
+
+![Forecast sampling](https://www.tmwr.org/premade/rolling.svg)
+
+
